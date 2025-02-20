@@ -8,7 +8,7 @@ export default function SearchBar({ setValue, value }: SearchBarProps) {
     <div className="relative">
       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
         <svg
-          className="w-5 h-5 text-neutral-900"
+          className="w-5 h-5 dark:text-white text-mainDark"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -25,7 +25,7 @@ export default function SearchBar({ setValue, value }: SearchBarProps) {
       <input
         value={value}
         type="text"
-        className="pl-10 pr-6 py-3 text-sm max-w-[480px] w-full  shadow-2xs rounded-lg bg-white dark:bg-mainDark placeholder-neutral-500"
+        className="pl-10 pr-6 py-3 text-sm max-w-[480px] w-full  shadow-2xs rounded-lg bg-white dark:bg-mainDark placeholder-neutral-500 text-mainDark dark:text-white"
         placeholder="Search for a country…"
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setValue(e.target.value)
