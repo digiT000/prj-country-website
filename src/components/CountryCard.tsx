@@ -19,7 +19,7 @@ export default function CountryCard({ country }: CardProp) {
       />
       <div className="p-6 flex flex-col gap-4">
         <h2 className="text-lg font-extrabold text-mainDark dark:text-white">
-          {country.title}
+          {country.name.official}
         </h2>
         <div className="flex flex-col gap-2">
           <CountryItem label="Populations" value={country.population} />

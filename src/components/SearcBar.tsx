@@ -1,4 +1,9 @@
-export default function SearchBar() {
+interface SearchBarProps {
+  value: string;
+  setValue: (e: string) => void;
+}
+
+export default function SearchBar({ setValue, value }: SearchBarProps) {
   return (
     <div className="relative">
       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -18,9 +23,13 @@ export default function SearchBar() {
         </svg>
       </div>
       <input
+        value={value}
         type="text"
         className="pl-10 pr-6 py-3 text-sm max-w-[480px] w-full  shadow-2xs rounded-lg bg-white dark:bg-mainDark placeholder-neutral-500"
         placeholder="Search for a country…"
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setValue(e.target.value)
+        }
       />
     </div>
   );
