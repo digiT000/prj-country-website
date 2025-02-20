@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Container from "./components/Container";
 import Dropdown from "./components/Dropdown";
 import ListCountry from "./components/ListCountry";
@@ -7,77 +7,96 @@ import SearchBar from "./components/SearcBar";
 import { ThemeSwitcherContext } from "./context/ThemeSwitcher";
 import { CountryInterface } from "./interface/interface";
 import CountrySkeleton from "./components/ListCountry.skeleton";
+import debounce from "lodash.debounce";
 
-const dropdownItems = ["Africa", "America", "Asia", "Europe", "Oceania"];
+const dropdownItems = [
+  "All Region",
+  "Africa",
+  "America",
+  "Asia",
+  "Europe",
+  "Oceania",
+];
 export default function App() {
-  const initialRender = useRef<boolean>(true);
+  console.log("RENDERRR");
   const { isDarkMode } = ThemeSwitcherContext();
+  const initialRender = useRef<boolean>(true);
   const [search, setSearch] = useState<string>("");
-  const [listCountry, setListCountry] = useState<CountryInterface[]>([]);
+  const [listCountry, setListCountry] = useState<CountryInterface[]>([]); // ALL COUNTRY OR COUNTRY BASED ON REGION
+  const [filteredCountry, setFilteredCountry] = useState<CountryInterface[]>(
+    []
+  );
+  const [isError, setIsError] = useState<boolean>(false);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [selectFilter, setSelectedFilter] = useState<string | null>(null);
+  const [selectFilter, setSelectedFilter] = useState<string | null>(
+    dropdownItems[0]
+  );
 
   function handleSearchInputChange(value: string) {
     setSearch(value); // Update the visual input immediately
+    debouncedSearch(value);
+  }
+  function hanelOnChangeFilter(value: string) {
+    setSearch("");
+    setSelectedFilter(value);
+    handleFetchCountries(value);
   }
 
-  async function fetchAllCountries() {
-    try {
+  const handleFetchCountries = useCallback(
+    async (region: string | null = null) => {
+      setIsError(false);
       setIsLoading(true);
-      const response = await fetch(
-        "https://restcountries.com/v3.1/all?fields=name,capital,region,flags,population"
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error: Status ${response.status}`);
+      let url =
+        "https://restcountries.com/v3.1/all?fields=name,capital,region,flags,population";
+      if (region && region !== "All Region") {
+        url = `https://restcountries.com/v3.1/region/${region.toLowerCase()}?fields=name,capital,region,flags,population`;
       }
-      const countryData = await response.json();
-      setListCountry(countryData);
-    } catch (error) {
-      setListCountry([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-  const handleFetchSearch = async (search: string) => {
-    try {
-      setIsLoading(true); // Set loading to true *before* fetching
-      const response = await fetch(
-        `https://restcountries.com/v3.1/name/${search}?fields=name,capital,region,flags,population`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error: Status ${response.status}`);
-      }
-      const searchResult = await response.json();
-      setListCountry(searchResult);
-    } catch (error) {
-      setListCountry([]);
-    } finally {
-      setIsLoading(false); // Set loading to false *after* fetching (success or error)
-    }
-  }; // Add handleFetchSearch to dependency array
 
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error: Status ${response.status}`);
+        }
+        const countryData = await response.json();
+        setListCountry(countryData);
+        setFilteredCountry(countryData);
+      } catch (error) {
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  const debouncedSearch = useMemo(() => {
+    return debounce((searchTerm: string) => {
+      if (!searchTerm) {
+        setFilteredCountry(listCountry); // Reset to region-filtered list
+        return;
+      }
+
+      const filtered = listCountry.filter((country) => {
+        const nameMatch =
+          country.name.official
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          country.name.common.toLowerCase().includes(searchTerm.toLowerCase());
+        return nameMatch;
+      });
+      setFilteredCountry(filtered);
+    }, 500);
+  }, [listCountry]);
+
+  // Use effect to initialfetching
   useEffect(() => {
     if (initialRender.current) {
-      fetchAllCountries(); // Fetch all countries on initial render
+      handleFetchCountries();
       initialRender.current = false;
     }
-  }, []); // Empty dependency array: fetch all countries only once
+  }, []);
 
-  useEffect(() => {
-    if (!search && !initialRender.current) {
-      fetchAllCountries();
-      // If search is empty, reset to all countries (or handle as needed)
-      return;
-    }
-
-    const timeout = setTimeout(() => {
-      if (search) {
-        handleFetchSearch(search);
-      }
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, [search]); // Add fetchAllCountries to the dependency array
   return (
     <div className={isDarkMode ? "dark" : "light"}>
       <NavigationBar />
@@ -87,14 +106,14 @@ export default function App() {
           <Dropdown
             label="Filter by region"
             option={dropdownItems}
-            setSelected={setSelectedFilter}
+            setSelected={hanelOnChangeFilter}
             selected={selectFilter as string}
           />
         </div>
         {isLoading ? (
           <CountrySkeleton length={9} />
         ) : (
-          <ListCountry country={listCountry} />
+          <ListCountry country={filteredCountry} />
         )}
       </Container>
     </div>

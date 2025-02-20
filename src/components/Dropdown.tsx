@@ -3,7 +3,7 @@ import { useState } from "react";
 interface DropdownProps {
   label: string;
   option: string[];
-  setSelected: React.Dispatch<React.SetStateAction<string | null>>;
+  setSelected: (value: string) => void;
   selected: string;
 }
 

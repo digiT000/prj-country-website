@@ -15,11 +15,11 @@ export default function CountryCard({ country }: CardProp) {
       <img
         src={country.flags.svg}
         alt={`image - ${country.name.common}`}
-        className="w-full border-b border-b-neutral-100  h-full max-h-[200px]"
+        className="w-full border-b border-b-neutral-100  h-[200px] object-cover"
       />
       <div className="p-6 flex flex-col gap-4">
         <h2 className="text-lg font-extrabold text-mainDark dark:text-white">
-          {country.name.official}
+          {country.name.common}
         </h2>
         <div className="flex flex-col gap-2">
           <CountryItem label="Populations" value={country.population} />
