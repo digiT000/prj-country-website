@@ -4,42 +4,53 @@ import Dropdown from "./components/Dropdown";
 import ListCountry from "./components/ListCountry";
 import NavigationBar from "./components/NavigationBar";
 import SearchBar from "./components/SearcBar";
-import { countries } from "./data/data";
+import { ThemeSwitcherContext } from "./context/ThemeSwitcher";
+import { CountryInterface } from "./interface/interface";
+
+const dropdownItems = ["Africa", "America", "Asia", "Europe", "Oceania"];
 
 export default function App() {
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [listCountry, setListCountry] = useState<CountryInterface[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectFilter, setSelectedFilter] = useState<string | null>(null);
+  const { isDarkMode } = ThemeSwitcherContext();
 
   useEffect(() => {
-    let savedMode = localStorage.getItem("displayMode");
-    if (!savedMode) {
-      savedMode = "light";
-      setDarkMode(false);
-      localStorage.setItem("displayMode", savedMode);
-    }
+    const fetchCountry = async () => {
+      try {
+        const response = await fetch(
+          "https://restcountries.com/v3.1/all?fields=name,capital,region,flags,population"
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error: Status ${response.status}`);
+        }
+        const countryData = await response.json();
+        setListCountry(countryData);
+      } catch (error) {
+        setListCountry([]);
+      } finally {
+      }
+    };
 
-    setDarkMode(savedMode === "dark" ? true : false);
+    fetchCountry();
   }, []);
 
-  console.log(darkMode);
+  console.log(listCountry);
 
-  const toggleDisplay = () => {
-    setDarkMode((prevDark) => !prevDark);
-    console.log(darkMode);
-    localStorage.setItem("displayMode", darkMode ? "dark" : "light");
-  };
   return (
-    <div className={darkMode ? "dark" : "light"}>
-      <h1 className="text-4xl dark">tes</h1>
-      <button onClick={toggleDisplay} className="border p-4 text-3x">
-        {darkMode ? "set To Light" : "set to dark"}
-      </button>
+    <div className={isDarkMode ? "dark" : "light"}>
       <NavigationBar />
       <Container>
-        <div className="flex justify-between items-center mb-10 bg-neutral-200 dark:bg-neutral-900">
+        <div className="flex flex-col gap-3 mb-8 md:justify-between md:flex-row md:items-center md:mb-10 px-4">
           <SearchBar />
-          <Dropdown />
+          <Dropdown
+            label="Filter by region"
+            option={dropdownItems}
+            setSelected={setSelectedFilter}
+            selected={selectFilter as string}
+          />
         </div>
-        <ListCountry />
+        {isLoading || <ListCountry country={listCountry} />}
       </Container>
     </div>
   );

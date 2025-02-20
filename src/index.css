@@ -4,7 +4,10 @@
 
 @theme {
   --font-nunito: "Nunito Sans", serif;
+  --color-mainDark: #2b3844;
+  --color-secondaryDark: #202c36;
 }
-body {
-  background-color: #fafafa;
+
+.custom-dropdown {
+  min-width: 12rem;
 }

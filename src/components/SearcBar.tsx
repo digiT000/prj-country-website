@@ -19,7 +19,7 @@ export default function SearchBar() {
       </div>
       <input
         type="text"
-        className="bg-white pl-10 pr-6 py-3 text-sm max-w-[480px] w-full  shadow-2xs rounded-lg"
+        className="pl-10 pr-6 py-3 text-sm max-w-[480px] w-full  shadow-2xs rounded-lg bg-white dark:bg-mainDark placeholder-neutral-500"
         placeholder="Search for a country…"
       />
     </div>
