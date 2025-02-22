@@ -1,6 +1,7 @@
 import { CountryProp } from "../interface/interface";
 import CountryItem from "./CountryItem";
 import { CountryInterface } from "../interface/interface";
+import { Link } from "react-router-dom";
 
 interface CardProp {
   country: CountryInterface;
@@ -8,8 +9,8 @@ interface CardProp {
 
 export default function CountryCard({ country }: CardProp) {
   return (
-    <a
-      href="#"
+    <Link
+      to={`/country/${country.name.common}`}
       className="transition duration-300 ease-in-out hover:scale-105 hover:shadow-lg rounded-lg overflow-hidden h-fit bg-white dark:bg-mainDark"
     >
       <img
@@ -27,6 +28,6 @@ export default function CountryCard({ country }: CardProp) {
           <CountryItem label="Capital" value={country.capital} />
         </div>
       </div>
-    </a>
+    </Link>
   );
 }

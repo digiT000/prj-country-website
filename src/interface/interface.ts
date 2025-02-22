@@ -36,3 +36,11 @@ export interface CountryInterface {
   // Add other properties as needed based on your data
   [key: string]: any; // Make other properties optional
 }
+
+export interface CountryDetailProps extends CountryInterface {
+  tld: string[];
+  currencies: { [key: string]: { name: string; symbol: string } };
+  languages: { [key: string]: string };
+  subregion: string;
+  borders: string[];
+}

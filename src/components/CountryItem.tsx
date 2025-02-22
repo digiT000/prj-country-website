@@ -1,6 +1,6 @@
 interface ItemLabel {
   label: string;
-  value: string | number;
+  value: string | number | undefined;
 }
 
 export default function CountryItem({ label, value }: ItemLabel) {
