@@ -8,6 +8,7 @@ import { ThemeSwitcherContext } from "../context/ThemeSwitcher";
 import { CountryInterface } from "../interface/interface";
 import CountrySkeleton from "../components/ListCountry.skeleton";
 import debounce from "lodash.debounce";
+import { Helmet } from "react-helmet-async";
 
 const dropdownItems = [
   "All Region",
@@ -96,30 +97,37 @@ export default function Home() {
   }, []);
 
   return (
-    <div className={isDarkMode ? "dark" : "light"}>
-      <NavigationBar />
-      {isError ? (
-        <p className="min-h-screen bg-neutral-100 dark:bg-secondaryDark transition-colors duration-300 p-10 w-screen flex justify-center items-center text-center text-mainDark dark:text-white">
-          Something went wrong,please refresh your browser
-        </p>
-      ) : (
-        <Container>
-          <div className="flex flex-col gap-3 mb-8 md:justify-between md:flex-row md:items-center md:mb-10 px-4">
-            <SearchBar value={search} setValue={handleSearchInputChange} />
-            <Dropdown
-              label="Filter by region"
-              option={dropdownItems}
-              setSelected={hanelOnChangeFilter}
-              selected={selectFilter as string}
-            />
-          </div>
-          {isLoading ? (
-            <CountrySkeleton length={9} />
-          ) : (
-            <ListCountry country={filteredCountry} />
-          )}
-        </Container>
-      )}
-    </div>
+    <>
+      <Helmet>
+        <meta charSet="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <title>Find Country | Homepage</title>
+      </Helmet>
+      <div className={isDarkMode ? "dark" : "light"}>
+        <NavigationBar />
+        {isError ? (
+          <p className="min-h-screen bg-neutral-100 dark:bg-secondaryDark transition-colors duration-300 p-10 w-screen flex justify-center items-center text-center text-mainDark dark:text-white">
+            Something went wrong,please refresh your browser
+          </p>
+        ) : (
+          <Container>
+            <div className="flex flex-col gap-3 mb-8 md:justify-between md:flex-row md:items-center md:mb-10 px-4">
+              <SearchBar value={search} setValue={handleSearchInputChange} />
+              <Dropdown
+                label="Filter by region"
+                option={dropdownItems}
+                setSelected={hanelOnChangeFilter}
+                selected={selectFilter as string}
+              />
+            </div>
+            {isLoading ? (
+              <CountrySkeleton length={9} />
+            ) : (
+              <ListCountry country={filteredCountry} />
+            )}
+          </Container>
+        )}
+      </div>
+    </>
   );
 }
