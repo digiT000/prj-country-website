@@ -1,4 +1,3 @@
-import { CountryProp } from "../interface/interface";
 import CountryItem from "./CountryItem";
 import { CountryInterface } from "../interface/interface";
 import { Link } from "react-router-dom";
